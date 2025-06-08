@@ -270,3 +270,77 @@ For support and questions:
 - ✅ Enhanced admin interface with tag management
 - ✅ Performance optimization with database indexes
 - ✅ Organized script structure for better maintainability
+
+## 🛡️ Security Features
+
+The Bilingual News Website is built with enterprise-grade security, following best practices and industry standards. Below is a summary of the implemented security features:
+
+### Authentication & Authorization
+
+- JWT-based secure authentication for admin users
+- Bcrypt password hashing (12 rounds)
+- Secure cookie management (HTTP-only, SameSite)
+- Automatic token expiration and renewal
+- Admin route protection and session validation
+
+### CSRF Protection
+
+- Token-based CSRF validation for all forms and sensitive API endpoints
+- Dynamic token generation (`/api/csrf`)
+- Server-side token verification and automatic rotation
+
+### Input Validation & Sanitization
+
+- Comprehensive input validation framework for all API endpoints
+- SQL injection prevention (parameterized queries)
+- XSS prevention (content sanitization)
+- File upload security validation
+- URL and email validation
+- HTML content sanitization
+
+### Rate Limiting & DDoS Protection
+
+- IP-based API rate limiting
+- Dynamic rate limit headers
+- Endpoint-specific limits
+- Authentication attempt limiting
+- File upload rate limiting
+
+### Security Headers
+
+- Content Security Policy (CSP)
+- HTTP Strict Transport Security (HSTS)
+- X-Frame-Options (Clickjacking protection)
+- X-Content-Type-Options (MIME sniffing prevention)
+- Referrer Policy configuration
+- Permissions Policy
+
+### Secure Error Handling
+
+- No internal information disclosure
+- Structured error responses
+- Security event logging and IP tracking
+- Graceful error fallbacks
+
+### Security Monitoring
+
+- Real-time security dashboard (admin panel)
+- Security metrics API
+- Automated security auditing
+- Threat detection and analysis
+- Comprehensive security logging
+
+### File Security
+
+- File type validation and size restrictions
+- Malicious file detection
+- Secure file naming and upload directory protection
+
+### Security Documentation
+
+- See `SECURITY.md` and `SECURITY-COMPLETE.md` for full details
+- Security testing and production setup scripts in `scripts/security/`
+
+---
+
+For more information, see the [SECURITY-COMPLETE.md](SECURITY-COMPLETE.md) file for a full breakdown of all security features, coverage, and deployment recommendations.
