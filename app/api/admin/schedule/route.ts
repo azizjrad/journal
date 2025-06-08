@@ -1,36 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  scheduleArticle,
-  getScheduledArticles,
-  publishScheduledArticle,
-  cancelScheduledArticle,
-} from "@/lib/db";
-
-export async function GET() {
-  try {
-    const scheduledArticles = await getScheduledArticles();
-    return NextResponse.json(scheduledArticles);
-  } catch (error) {
-    console.error("Schedule API error:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch scheduled articles" },
-      { status: 500 }
-    );
-  }
-}
-
-import { NextRequest, NextResponse } from "next/server";
-import {
-  scheduleArticle,
-  getScheduledArticles,
-  publishScheduledArticle,
-  cancelScheduledArticle,
+  getAllScheduledArticles,
+  createScheduledArticle
 } from "@/lib/db";
 import { getClientIP, validateInput } from "@/lib/security";
 
 export async function GET() {
   try {
-    const scheduledArticles = await getScheduledArticles();
+    const scheduledArticles = await getAllScheduledArticles();
     return NextResponse.json(scheduledArticles);
   } catch (error) {
     console.error("Schedule API error:", error);
@@ -44,8 +21,6 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const clientIP = getClientIP(request);
-
-    // Security: Parse and validate request body
     let body;
     try {
       body = await request.json();
@@ -58,10 +33,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
     const { articleId, scheduledFor } = body;
-
-    // Security: Validate required fields
     if (!articleId || !scheduledFor) {
       console.warn(
         `Missing required fields in schedule request from ${clientIP}`
@@ -71,8 +43,6 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
-    // Security: Validate articleId is a positive integer
     if (!Number.isInteger(articleId) || articleId <= 0) {
       console.warn(
         `Invalid article ID in schedule request from ${clientIP}: ${articleId}`
@@ -82,8 +52,6 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
-    // Security: Validate scheduledFor is a valid date string
     const scheduledDate = new Date(scheduledFor);
     if (isNaN(scheduledDate.getTime())) {
       console.warn(`Invalid scheduled date from ${clientIP}: ${scheduledFor}`);
@@ -92,17 +60,17 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
-    // Security: Ensure scheduled date is in the future
     if (scheduledDate <= new Date()) {
       return NextResponse.json(
         { error: "Scheduled date must be in the future" },
         { status: 400 }
       );
     }
-
-    const result = await scheduleArticle(articleId, scheduledFor);
-
+    const result = await createScheduledArticle({
+      article_id: articleId,
+      scheduled_for: scheduledFor,
+      status: "scheduled"
+    });
     console.log(
       `Article scheduled successfully by admin from ${clientIP}: Article ${articleId} for ${scheduledFor}`
     );
