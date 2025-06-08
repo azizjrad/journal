@@ -1098,7 +1098,8 @@ export async function publishScheduledArticle(id: number) {
 
 // Get sitemap entries from sitemap_cache
 export async function getSitemapEntries(): Promise<SitemapEntry[]> {
-  const result = await sql`SELECT * FROM sitemap_cache ORDER BY last_modified DESC`;
+  const result =
+    await sql`SELECT * FROM sitemap_cache ORDER BY last_modified DESC`;
   return result as SitemapEntry[];
 }
 

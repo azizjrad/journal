@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { SecurityDashboard } from "@/components/security-dashboard";
+import SecurityDashboard from "@/components/security-dashboard";
 import {
   Card,
   CardContent,
@@ -15,11 +15,35 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Shield, AlertTriangle, CheckCircle, RefreshCw } from "lucide-react";
 
+// --- Add types for audit results ---
+interface AuditCheck {
+  description: string;
+  score: number;
+  status: string;
+}
+interface AuditRecommendation {
+  category: string;
+  description: string;
+  impact: string;
+}
+interface AuditSummary {
+  passed: number;
+  warnings: number;
+  failures: number;
+}
+interface AuditResults {
+  timestamp: string;
+  score: number;
+  summary: AuditSummary;
+  checks: Record<string, AuditCheck>;
+  recommendations: AuditRecommendation[];
+}
+
 export default function SecurityAdminPage() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [auditResults, setAuditResults] = useState(null);
+  const [auditResults, setAuditResults] = useState<AuditResults | null>(null);
   const [auditLoading, setAuditLoading] = useState(false);
   const [csrfToken, setCsrfToken] = useState("");
 
@@ -101,13 +125,13 @@ export default function SecurityAdminPage() {
     return null;
   }
 
-  const getScoreColor = (score) => {
+  const getScoreColor = (score: number) => {
     if (score >= 90) return "text-green-600";
     if (score >= 70) return "text-yellow-600";
     return "text-red-600";
   };
 
-  const getStatusBadge = (status) => {
+  const getStatusBadge = (status: string) => {
     switch (status) {
       case "pass":
         return (
@@ -212,31 +236,33 @@ export default function SecurityAdminPage() {
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Security Checks</h3>
               <div className="grid gap-3">
-                {Object.entries(auditResults.checks).map(([key, check]) => (
-                  <div
-                    key={key}
-                    className="flex items-center justify-between p-3 border rounded-lg"
-                  >
-                    <div className="flex-1">
-                      <div className="font-medium capitalize">
-                        {key.replace(/([A-Z])/g, " $1")}
+                {Object.entries(auditResults.checks).map(
+                  ([key, check]: [string, AuditCheck]) => (
+                    <div
+                      key={key}
+                      className="flex items-center justify-between p-3 border rounded-lg"
+                    >
+                      <div className="flex-1">
+                        <div className="font-medium capitalize">
+                          {key.replace(/([A-Z])/g, " $1")}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          {check.description}
+                        </div>
                       </div>
-                      <div className="text-sm text-gray-600">
-                        {check.description}
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`text-sm font-medium ${getScoreColor(
+                            check.score
+                          )}`}
+                        >
+                          {check.score}/100
+                        </span>
+                        {getStatusBadge(check.status)}
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`text-sm font-medium ${getScoreColor(
-                          check.score
-                        )}`}
-                      >
-                        {check.score}/100
-                      </span>
-                      {getStatusBadge(check.status)}
-                    </div>
-                  </div>
-                ))}
+                  )
+                )}
               </div>
             </div>
 
@@ -244,18 +270,20 @@ export default function SecurityAdminPage() {
               <div className="mt-6">
                 <h3 className="text-lg font-semibold mb-3">Recommendations</h3>
                 <div className="space-y-2">
-                  {auditResults.recommendations.map((rec, index) => (
-                    <Alert key={index}>
-                      <AlertTriangle className="h-4 w-4" />
-                      <AlertDescription>
-                        <span className="font-medium">{rec.category}:</span>{" "}
-                        {rec.description}
-                        <div className="text-sm text-gray-600 mt-1">
-                          {rec.impact}
-                        </div>
-                      </AlertDescription>
-                    </Alert>
-                  ))}
+                  {auditResults.recommendations.map(
+                    (rec: AuditRecommendation, index: number) => (
+                      <Alert key={index}>
+                        <AlertTriangle className="h-4 w-4" />
+                        <AlertDescription>
+                          <span className="font-medium">{rec.category}:</span>{" "}
+                          {rec.description}
+                          <div className="text-sm text-gray-600 mt-1">
+                            {rec.impact}
+                          </div>
+                        </AlertDescription>
+                      </Alert>
+                    )
+                  )}
                 </div>
               </div>
             )}

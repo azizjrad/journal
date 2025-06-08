@@ -19,7 +19,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const clientIP = getClientIP(request);
-    
+
     // Security: Parse and validate request body
     let body;
     try {
@@ -35,14 +35,17 @@ export async function POST(request: NextRequest) {
     // Security: Validate and sanitize input
     const validation = validateTagData(body, false);
     if (!validation.isValid) {
-      console.warn(`Invalid tag data from ${clientIP}: ${validation.errors.join(', ')}`);
+      console.warn(
+        `Invalid tag data from ${clientIP}: ${validation.errors.join(", ")}`
+      );
       return NextResponse.json(
-        { error: validation.errors.join(', ') },
+        { error: validation.errors.join(", ") },
         { status: 400 }
       );
     }
 
-    const { name_en, name_ar, slug, description_en, description_ar } = validation.sanitizedData!;
+    const { name_en, name_ar, slug, description_en, description_ar } =
+      validation.sanitizedData!;
 
     // Check if slug already exists
     const existingTagArr = await getTags();
@@ -62,7 +65,9 @@ export async function POST(request: NextRequest) {
       description_ar,
     });
 
-    console.log(`Tag created successfully by admin from ${clientIP}: ${newTag.id}`);
+    console.log(
+      `Tag created successfully by admin from ${clientIP}: ${newTag.id}`
+    );
     return NextResponse.json(newTag, { status: 201 });
   } catch (error) {
     const clientIP = getClientIP(request);
