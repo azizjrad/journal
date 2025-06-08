@@ -1068,6 +1068,40 @@ export async function getArticleTags(articleId: number): Promise<Tag[]> {
   return result as Tag[];
 }
 
+// Remove all tags from an article
+export async function removeArticleTags(articleId: number) {
+  if (!Number.isInteger(articleId) || articleId <= 0) {
+    throw new Error("Invalid article ID");
+  }
+  return await sql`DELETE FROM article_tags WHERE article_id = ${articleId}`;
+}
+
+// Cancel a scheduled article (set status to 'cancelled')
+export async function cancelScheduledArticle(id: number) {
+  if (!Number.isInteger(id) || id <= 0) {
+    throw new Error("Invalid scheduled article ID");
+  }
+  return await sql`
+    UPDATE scheduled_articles SET status = 'cancelled' WHERE id = ${id}
+  `;
+}
+
+// Publish a scheduled article (set status to 'published' and published_at to now)
+export async function publishScheduledArticle(id: number) {
+  if (!Number.isInteger(id) || id <= 0) {
+    throw new Error("Invalid scheduled article ID");
+  }
+  return await sql`
+    UPDATE scheduled_articles SET status = 'published', published_at = CURRENT_TIMESTAMP WHERE id = ${id}
+  `;
+}
+
+// Get sitemap entries from sitemap_cache
+export async function getSitemapEntries(): Promise<SitemapEntry[]> {
+  const result = await sql`SELECT * FROM sitemap_cache ORDER BY last_modified DESC`;
+  return result as SitemapEntry[];
+}
+
 // Security wrapper for SQL queries
 export function secureSQL(strings: TemplateStringsArray, ...values: any[]) {
   // Validate all string inputs for SQL injection

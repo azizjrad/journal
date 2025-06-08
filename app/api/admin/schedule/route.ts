@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  getAllScheduledArticles,
-  createScheduledArticle
-} from "@/lib/db";
+import { getAllScheduledArticles, createScheduledArticle } from "@/lib/db";
 import { getClientIP, validateInput } from "@/lib/security";
 
 export async function GET() {
@@ -69,7 +66,7 @@ export async function POST(request: NextRequest) {
     const result = await createScheduledArticle({
       article_id: articleId,
       scheduled_for: scheduledFor,
-      status: "scheduled"
+      status: "scheduled",
     });
     console.log(
       `Article scheduled successfully by admin from ${clientIP}: Article ${articleId} for ${scheduledFor}`
