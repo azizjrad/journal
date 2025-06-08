@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getTags, createTag, getTagBySlug } from "@/lib/db";
+import { getTags, createTag } from "@/lib/db";
 import { getClientIP } from "@/lib/security";
 import { validateTagData } from "@/lib/api-validation";
 
@@ -45,7 +45,8 @@ export async function POST(request: NextRequest) {
     const { name_en, name_ar, slug, description_en, description_ar } = validation.sanitizedData!;
 
     // Check if slug already exists
-    const existingTag = await getTagBySlug(slug);
+    const existingTagArr = await getTags();
+    const existingTag = existingTagArr.find((t) => t.slug === slug);
     if (existingTag) {
       return NextResponse.json(
         { error: "A tag with this slug already exists" },
@@ -68,10 +69,6 @@ export async function POST(request: NextRequest) {
     console.error(`Error creating tag from ${clientIP}:`, error);
     return NextResponse.json(
       { error: "Failed to create tag" },
-      { status: 500 }
-    );
-  }
-}
       { status: 500 }
     );
   }
