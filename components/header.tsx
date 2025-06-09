@@ -7,8 +7,8 @@ import { FontSizeController } from "./font-size-controller";
 import { DateTimeDisplay } from "./date-time-display";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Menu, Search } from "lucide-react";
-import { useState } from "react";
+import { Menu, Search, X } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 interface Category {
@@ -197,6 +197,20 @@ export function Header({ categories }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const router = useRouter();
 
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [mobileMenuOpen]);
+
   // Breaking news ticker (simulated for demo)
   const breakingNews = [
     t("breaking1", "Latest updates from Libya", "آخر التحديثات من ليبيا"),
@@ -293,94 +307,132 @@ export function Header({ categories }: HeaderProps) {
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                   title={t("menu", "Menu", "القائمة")}
                 >
-                  <Menu className="h-6 w-6 md:h-7 md:w-7 text-gray-700" />
+                  {mobileMenuOpen ? (
+                    <X className="h-6 w-6 md:h-7 md:w-7 text-gray-700" />
+                  ) : (
+                    <Menu className="h-6 w-6 md:h-7 md:w-7 text-gray-700" />
+                  )}
                 </Button>
               </div>
             </div>
 
             {/* Mobile menu */}
             {mobileMenuOpen && (
-              <div className="md:hidden mt-6 pb-6 border-t-2 border-red-100 pt-6 bg-gradient-to-b from-gray-50 to-white -mx-4 lg:-mx-6 px-4 lg:px-6 rounded-b-xl shadow-lg">
-                <div className="flex flex-col space-y-2">
-                  {/* Search in mobile menu */}
-                  <div className="mb-4 p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
-                    <form
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        const formData = new FormData(
-                          e.target as HTMLFormElement
-                        );
-                        const query = formData.get("search") as string;
-                        if (query?.trim()) {
-                          router.push(
-                            `/search?q=${encodeURIComponent(query.trim())}`
-                          );
-                          setMobileMenuOpen(false);
-                        }
-                      }}
-                      className="flex items-center gap-2"
+              <>
+                {/* Backdrop */}
+                <div
+                  className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+                  onClick={() => setMobileMenuOpen(false)}
+                />
+
+                {/* Mobile menu content */}
+                <div className="fixed top-0 left-0 right-0 bg-white z-50 md:hidden shadow-2xl border-b-4 border-red-600">
+                  {/* Header in mobile menu */}
+                  <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                    <div className="text-2xl font-black text-red-700">
+                      {t("site_title", "Akhbarna", "أخبارنا")}
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="h-10 w-10 rounded-xl hover:bg-gray-100"
                     >
-                      <div className="relative flex-1">
-                        <Input
-                          name="search"
-                          type="text"
-                          placeholder={t(
-                            "search_placeholder",
-                            "Search news...",
-                            "ابحث في الأخبار..."
-                          )}
-                          className="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:border-red-500 focus:ring-1 focus:ring-red-200"
-                        />
-                        <Button
-                          type="submit"
-                          size="sm"
-                          variant="ghost"
-                          className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-red-50"
-                        >
-                          <Search className="h-4 w-4 text-gray-500" />
-                        </Button>
-                      </div>
-                    </form>
+                      <X className="h-6 w-6 text-gray-700" />
+                    </Button>
                   </div>
 
-                  <Link
-                    href="/"
-                    className="text-xl font-bold text-gray-800 hover:text-red-700 hover:bg-red-50 transition-all duration-200 py-4 px-4 border-b border-gray-200 rounded-lg"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    {t("home", "Home", "الرئيسية")}
-                  </Link>
-                  {categories.map((category) => (
-                    <Link
-                      key={category.id}
-                      href={`/category/${category.slug}`}
-                      className="text-xl font-bold text-gray-800 hover:text-red-700 hover:bg-red-50 transition-all duration-200 py-4 px-4 border-b border-gray-200 last:border-b-0 rounded-lg"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      {language === "ar" ? category.name_ar : category.name_en}
-                    </Link>
-                  ))}
-                  <div className="pt-6 mt-4 border-t-2 border-gray-200 space-y-3">
-                    {/* Date/Time for mobile */}
-                    <div className="flex items-center justify-center gap-2 text-sm text-gray-600 bg-gray-50 rounded-lg px-3 py-3 border border-gray-200">
-                      <DateTimeDisplay isMobile={true} />
+                  {/* Scrollable menu content */}
+                  <div className="max-h-[calc(100vh-80px)] overflow-y-auto">
+                    <div className="p-4 space-y-4">
+                      {/* Search in mobile menu */}
+                      <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                        <form
+                          onSubmit={(e) => {
+                            e.preventDefault();
+                            const formData = new FormData(
+                              e.target as HTMLFormElement
+                            );
+                            const query = formData.get("search") as string;
+                            if (query?.trim()) {
+                              router.push(
+                                `/search?q=${encodeURIComponent(query.trim())}`
+                              );
+                              setMobileMenuOpen(false);
+                            }
+                          }}
+                          className="flex items-center gap-2"
+                        >
+                          <div className="relative flex-1">
+                            <Input
+                              name="search"
+                              type="text"
+                              placeholder={t(
+                                "search_placeholder",
+                                "Search news...",
+                                "ابحث في الأخبار..."
+                              )}
+                              className="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:border-red-500 focus:ring-1 focus:ring-red-200"
+                            />
+                            <Button
+                              type="submit"
+                              size="sm"
+                              variant="ghost"
+                              className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0 hover:bg-red-50"
+                            >
+                              <Search className="h-4 w-4 text-gray-500" />
+                            </Button>
+                          </div>
+                        </form>
+                      </div>
+
+                      {/* Navigation links */}
+                      <div className="space-y-2">
+                        <Link
+                          href="/"
+                          className="block text-xl font-bold text-gray-800 hover:text-red-700 hover:bg-red-50 transition-all duration-200 py-4 px-4 border-b border-gray-200 rounded-lg"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          {t("home", "Home", "الرئيسية")}
+                        </Link>
+                        {categories.map((category) => (
+                          <Link
+                            key={category.id}
+                            href={`/category/${category.slug}`}
+                            className="block text-xl font-bold text-gray-800 hover:text-red-700 hover:bg-red-50 transition-all duration-200 py-4 px-4 border-b border-gray-200 last:border-b-0 rounded-lg"
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            {language === "ar"
+                              ? category.name_ar
+                              : category.name_en}
+                          </Link>
+                        ))}
+                      </div>
+
+                      {/* Bottom section */}
+                      <div className="pt-6 mt-4 border-t-2 border-gray-200 space-y-3">
+                        {/* Date/Time for mobile */}
+                        <div className="flex items-center justify-center gap-2 text-sm text-gray-600 bg-gray-50 rounded-lg px-3 py-3 border border-gray-200">
+                          <DateTimeDisplay isMobile={true} />
+                        </div>
+                        <FontSizeController />
+                        <Link
+                          href="/admin"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          <Button
+                            variant="outline"
+                            size="lg"
+                            className="w-full text-lg font-bold py-4 border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition-all duration-300 rounded-xl"
+                          >
+                            {t("admin", "Admin", "الإدارة")}
+                          </Button>
+                        </Link>
+                      </div>
                     </div>
-                    <FontSizeController />
-                    <Link
-                      href="/admin"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <Button
-                        variant="outline"
-                        size="lg"
-                        className="w-full text-lg font-bold py-4 border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition-all duration-300 rounded-xl"
-                      >
-                        {t("admin", "Admin", "الإدارة")}
-                      </Button>
-                    </Link>
                   </div>
                 </div>
-              </div>
+              </>
             )}
           </nav>
         </div>

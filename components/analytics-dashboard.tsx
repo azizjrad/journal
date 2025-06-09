@@ -6,6 +6,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   BarChart3,
   Eye,
   TrendingUp,
@@ -190,6 +197,11 @@ export function AnalyticsDashboard({ initialData }: AnalyticsDashboardProps) {
   const [loading, setLoading] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState("30");
 
+  // Refresh data when period changes
+  useEffect(() => {
+    refreshData();
+  }, [selectedPeriod]);
+
   const refreshData = async () => {
     setLoading(true);
     try {
@@ -224,17 +236,18 @@ export function AnalyticsDashboard({ initialData }: AnalyticsDashboardProps) {
           <p className="text-gray-600 mt-1">
             Monitor your content performance and engagement
           </p>
-        </div>
+        </div>{" "}
         <div className="flex items-center gap-3">
-          <select
-            value={selectedPeriod}
-            onChange={(e) => setSelectedPeriod(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
-          >
-            <option value="7">Last 7 days</option>
-            <option value="30">Last 30 days</option>
-            <option value="90">Last 90 days</option>
-          </select>
+          <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
+            <SelectTrigger className="w-[140px]">
+              <SelectValue placeholder="Select period" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="7">Last 7 days</SelectItem>
+              <SelectItem value="30">Last 30 days</SelectItem>
+              <SelectItem value="90">Last 90 days</SelectItem>
+            </SelectContent>
+          </Select>
           <Button
             onClick={refreshData}
             disabled={loading}
@@ -274,8 +287,41 @@ export function AnalyticsDashboard({ initialData }: AnalyticsDashboardProps) {
           value={data.popularCategories.length}
           icon={<Target className="h-6 w-6" />}
           color="orange"
-        />
+        />{" "}
       </div>
+
+      {/* Show helpful message when no data */}
+      {data.totalViews === 0 && data.totalEngagements === 0 && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+          <div className="flex items-center gap-3 mb-3">
+            <Eye className="h-5 w-5 text-blue-600" />
+            <h3 className="font-medium text-blue-900">
+              Start Collecting Analytics Data
+            </h3>
+          </div>
+          <p className="text-blue-800 text-sm mb-4">
+            Your analytics are ready! To see data here:
+          </p>
+          <div className="space-y-2">
+            <p className="text-blue-700 text-sm">
+              • Visit{" "}
+              <a href="/" className="underline hover:no-underline">
+                your homepage
+              </a>{" "}
+              to generate page views
+            </p>
+            <p className="text-blue-700 text-sm">
+              • Read articles to create view statistics
+            </p>
+            <p className="text-blue-700 text-sm">
+              • Share or interact with content to generate engagement data
+            </p>
+            <p className="text-blue-700 text-sm">
+              • Return here to see your real-time analytics
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Charts and Data */}
       <Tabs defaultValue="overview" className="space-y-6">

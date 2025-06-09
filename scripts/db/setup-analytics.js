@@ -10,11 +10,7 @@ const sql = neon(process.env.DATABASE_URL);
 
 async function setupAnalytics() {
   try {
-    console.log("Setting up analytics tables..."); // Read and execute the analytics SQL script
-    const analyticsSQL = fs.readFileSync(
-      path.join(__dirname, "scripts", "03-analytics-tables.sql"),
-      "utf8"
-    );
+    console.log("Setting up analytics tables...");
 
     // Execute each CREATE TABLE statement separately
     await sql`

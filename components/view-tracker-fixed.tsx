@@ -13,16 +13,7 @@ const trackingCache = new Set<string>();
 export function ViewTracker({ articleId, title }: ViewTrackerProps) {
   const hasTracked = useRef(false);
 
-  // Add a debug log to see if component is mounting
-  console.log(
-    `ViewTracker component mounted for article ${articleId}: ${title}`
-  );
-
   useEffect(() => {
-    console.log(
-      `ViewTracker useEffect running for article ${articleId}, hasTracked: ${hasTracked.current}`
-    );
-
     // Prevent duplicate tracking in the same component instance
     if (hasTracked.current) {
       console.log(`🔄 Skipping duplicate tracking for article ${articleId}`);
@@ -48,7 +39,9 @@ export function ViewTracker({ articleId, title }: ViewTrackerProps) {
 
         // Add to cache to prevent duplicates
         trackingCache.add(cacheKey);
-        hasTracked.current = true; // Clean up old cache entries (keep only last 10)
+        hasTracked.current = true;
+
+        // Clean up old cache entries (keep only last 10)
         if (trackingCache.size > 10) {
           const firstKey = trackingCache.values().next().value;
           if (firstKey) {

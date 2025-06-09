@@ -19,7 +19,6 @@ import {
   Zap,
   BarChart3,
 } from "lucide-react";
-import { LogoutButton } from "@/components/logout-button";
 import { DeleteArticleButton } from "@/components/delete-article-button";
 import { CategoryManagement } from "@/components/category-management";
 import { AnalyticsDashboard } from "@/components/analytics-dashboard";
@@ -123,10 +122,10 @@ export function AdminDashboard({
                     className="text-gray-700 border-gray-300 hover:bg-gray-50"
                   >
                     <Eye className="h-4 w-4 mr-2" />
-                    Preview Site
+                    Preview Site{" "}
                   </Button>
                 </Link>
-                <LogoutButton />
+                {/* Authentication removed - no logout needed */}
               </div>
             </div>
           </div>
@@ -388,13 +387,45 @@ export function AdminDashboard({
                   <AnalyticsDashboard initialData={initialAnalytics} />
                 ) : (
                   <div className="text-center py-16">
-                    <BarChart3 className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                    <BarChart3 className="h-16 w-16 text-blue-400 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">
-                      Analytics Loading
+                      Analytics Starting Fresh
                     </h3>
-                    <p className="text-gray-600">
-                      Analytics data is being prepared...
+                    <p className="text-gray-600 mb-4">
+                      No analytics data yet - ready to start tracking real user
+                      activity!
                     </p>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 max-w-md mx-auto mb-6">
+                      <h4 className="font-medium text-blue-900 mb-3">
+                        To start collecting analytics:
+                      </h4>
+                      <ul className="text-blue-800 text-sm space-y-2 text-left">
+                        <li>• Visit article pages to generate page views</li>
+                        <li>• Interact with content (shares, likes)</li>
+                        <li>• Analytics will automatically appear here</li>
+                      </ul>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-gray-500 text-sm">
+                        <strong>Next steps:</strong>
+                      </p>
+                      <p className="text-gray-500 text-sm">
+                        1. Browse to{" "}
+                        <Link
+                          href="/"
+                          className="text-blue-600 hover:underline"
+                        >
+                          your homepage
+                        </Link>{" "}
+                        to start generating real data
+                      </p>
+                      <p className="text-gray-500 text-sm">
+                        2. Read some articles to create page views
+                      </p>
+                      <p className="text-gray-500 text-sm">
+                        3. Return here to see your real analytics data
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>

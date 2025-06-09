@@ -45,7 +45,6 @@ export function EnhancedNewArticleForm({ categories }: NewArticleFormProps) {
   const [imagePreview, setImagePreview] = useState<string>("");
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
   const [availableTags, setAvailableTags] = useState<Tag[]>([]);
-  const [csrfToken, setCsrfToken] = useState("");
 
   const [formData, setFormData] = useState({
     title_en: "",
@@ -62,27 +61,16 @@ export function EnhancedNewArticleForm({ categories }: NewArticleFormProps) {
     meta_description_ar: "",
     meta_keywords_en: "",
     meta_keywords_ar: "",
-  });
-  // Fetch available tags and CSRF token on component mount
+  }); // Fetch available tags on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch tags and CSRF token in parallel
-        const [tagsResponse, csrfResponse] = await Promise.all([
-          fetch("/api/admin/tags"),
-          fetch("/api/csrf"),
-        ]);
+        // Fetch tags
+        const tagsResponse = await fetch("/api/admin/tags");
 
         if (tagsResponse.ok) {
           const tags = await tagsResponse.json();
           setAvailableTags(tags);
-        }
-
-        if (csrfResponse.ok) {
-          const csrfData = await csrfResponse.json();
-          setCsrfToken(csrfData.csrfToken);
-        } else {
-          console.error("Failed to fetch CSRF token");
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -158,7 +146,7 @@ export function EnhancedNewArticleForm({ categories }: NewArticleFormProps) {
           category_id: Number.parseInt(formData.category_id),
           published_at: new Date().toISOString(),
           tags: selectedTags,
-          csrfToken, // Include CSRF token
+          // CSRF token no longer required - authentication removed
         }),
       });
 

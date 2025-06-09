@@ -53,14 +53,13 @@ export function LatestNewsSection({ articles }: LatestNewsSectionProps) {
       </div>
 
       {/* News Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-16">
-        {articles.map((article, index) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-16">        {articles.map((article, index) => (
           <div
             key={article.id}
-            className="group transform hover:scale-[1.02] transition-all duration-300"
+            className="group transform hover:scale-[1.02] transition-all duration-300 opacity-0 animate-fade-in-up"
             style={{
               animationDelay: `${index * 100}ms`,
-              animation: "fadeInUp 0.6s ease-out forwards",
+              animationFillMode: "forwards",
             }}
           >
             <ArticleCard article={article} />
@@ -80,19 +79,6 @@ export function LatestNewsSection({ articles }: LatestNewsSectionProps) {
           <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
         </Link>
       </div>
-
-      <style jsx>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </div>
   );
 }

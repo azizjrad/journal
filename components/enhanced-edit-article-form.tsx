@@ -76,7 +76,6 @@ export default function EnhancedEditArticlePage({
   const [categories, setCategories] = useState<Category[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
-  const [csrfToken, setCsrfToken] = useState("");
   const [article, setArticle] = useState<Article>({
     id: 0,
     title_en: "",
@@ -100,39 +99,32 @@ export default function EnhancedEditArticlePage({
   useEffect(() => {
     async function fetchData() {
       try {
-        const { id } = await params; // Fetch article, categories, tags, and CSRF token in parallel
-        const [articleRes, categoriesRes, tagsRes, csrfRes] = await Promise.all(
-          [
-            fetch(`/api/admin/articles/${id}`, {
-              cache: "no-store",
-              headers: {
-                "Cache-Control": "no-cache",
-              },
-            }),
-            fetch("/api/admin/categories"),
-            fetch("/api/admin/tags"),
-            fetch("/api/csrf"),
-          ]
-        );
+        const { id } = await params;
+        // Fetch article, categories, and tags in parallel
+        const [articleRes, categoriesRes, tagsRes] = await Promise.all([
+          fetch(`/api/admin/articles/${id}`, {
+            cache: "no-store",
+            headers: {
+              "Cache-Control": "no-cache",
+            },
+          }),
+          fetch("/api/admin/categories"),
+          fetch("/api/admin/tags"),
+        ]);
 
         if (!articleRes.ok) {
           throw new Error("Failed to fetch article");
         }
-
-        const [articleData, categoriesData, tagsData, csrfData] =
-          await Promise.all([
-            articleRes.json(),
-            categoriesRes.json(),
-            tagsRes.json(),
-            csrfRes.ok ? csrfRes.json() : { csrfToken: "" },
-          ]);
+        const [articleData, categoriesData, tagsData] = await Promise.all([
+          articleRes.json(),
+          categoriesRes.json(),
+          tagsRes.json(),
+        ]);
 
         setArticle(articleData);
         setCategories(categoriesData);
         setTags(tagsData);
-        if (csrfData.csrfToken) {
-          setCsrfToken(csrfData.csrfToken);
-        }
+        // CSRF token no longer required - authentication removed
 
         // Set selected tags if article has tags
         if (articleData.tags) {
@@ -204,7 +196,7 @@ export default function EnhancedEditArticlePage({
         ...article,
         tags: selectedTags,
         slug: article.slug || generateSlug(article.title_en),
-        csrfToken, // Include CSRF token
+        // CSRF token no longer required - authentication removed
       };
 
       const response = await fetch(`/api/admin/articles/${article.id}`, {

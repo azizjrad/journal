@@ -2,6 +2,7 @@ import type React from "react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import "../styles/professional-news.css";
 import { LanguageProvider } from "@/lib/language-context";
 import { Toaster } from "sonner";
 

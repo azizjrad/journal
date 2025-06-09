@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Final Authentication Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background: #f8f9fa;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      .test-card {
+        background: white;
+        margin: 20px 0;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .test-result {
+        margin: 10px 0;
+        padding: 10px;
+        border-radius: 4px;
+      }
+      .success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+      .error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+      .info {
+        background: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+      }
+      .loading {
+        background: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeaa7;
+      }
+      button {
+        padding: 10px 20px;
+        margin: 5px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      .auto-test {
+        background: #28a745;
+      }
+      .auto-test:hover {
+        background: #1e7e34;
+      }
+      pre {
+        background: #f8f9fa;
+        padding: 10px;
+        border-radius: 4px;
+        overflow-x: auto;
+      }
+      .status-indicator {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 8px;
+      }
+      .status-pass {
+        background: #28a745;
+      }
+      .status-fail {
+        background: #dc3545;
+      }
+      .status-pending {
+        background: #ffc107;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🔐 Final Authentication Test Suite</h1>
+      <p>
+        This test will verify that all authentication components are working
+        correctly.
+      </p>
+
+      <div class="test-card">
+        <h3>Test Configuration</h3>
+        <div>
+          <label>Admin Password:</label>
+          <input
+            type="text"
+            id="testPassword"
+            value="Admin123!@2025"
+            style="margin-left: 10px; padding: 5px"
+          />
+        </div>
+        <div style="margin-top: 10px">
+          <button onclick="runAllTests()" class="auto-test">
+            Run All Tests
+          </button>
+          <button onclick="clearResults()">Clear Results</button>
+        </div>
+      </div>
+
+      <div class="test-card">
+        <h3>Test Results</h3>
+        <div id="testResults"></div>
+      </div>
+    </div>
+
+    <script>
+      let testResults = [];
+
+      function addResult(testName, status, message, data = null) {
+        const result = {
+          testName,
+          status,
+          message,
+          data,
+          timestamp: new Date().toLocaleTimeString(),
+        };
+        testResults.push(result);
+        updateDisplay();
+      }
+
+      function updateDisplay() {
+        const container = document.getElementById("testResults");
+        container.innerHTML = testResults
+          .map((result) => {
+            const statusClass =
+              result.status === "pass"
+                ? "success"
+                : result.status === "fail"
+                ? "error"
+                : "info";
+            const statusIndicator =
+              result.status === "pass"
+                ? "status-pass"
+                : result.status === "fail"
+                ? "status-fail"
+                : "status-pending";
+            return `
+                    <div class="test-result ${statusClass}">
+                        <div><span class="status-indicator ${statusIndicator}"></span><strong>${
+              result.testName
+            }</strong> - ${result.timestamp}</div>
+                        <div>${result.message}</div>
+                        ${
+                          result.data
+                            ? `<pre>${JSON.stringify(
+                                result.data,
+                                null,
+                                2
+                              )}</pre>`
+                            : ""
+                        }
+                    </div>
+                `;
+          })
+          .join("");
+      }
+
+      function clearResults() {
+        testResults = [];
+        updateDisplay();
+      }
+
+      async function runAllTests() {
+        clearResults();
+        addResult(
+          "Test Suite",
+          "info",
+          "Starting comprehensive authentication tests..."
+        );
+
+        try {
+          await testEnvironmentVariables();
+          await testBcryptFunctionality();
+          await testCSRFTokens();
+          await testLoginAPI();
+          await testFullAuthFlow();
+
+          addResult("Test Suite", "pass", "All tests completed! ✨");
+        } catch (error) {
+          addResult(
+            "Test Suite",
+            "fail",
+            `Test suite failed: ${error.message}`
+          );
+        }
+      }
+
+      async function testEnvironmentVariables() {
+        addResult(
+          "Environment Test",
+          "info",
+          "Testing environment variable loading..."
+        );
+
+        try {
+          const response = await fetch("/api/debug-env");
+          const data = await response.json();
+
+          if (data.envHashExists && data.envHashLength > 50) {
+            addResult(
+              "Environment Test",
+              "pass",
+              `Environment variables loaded correctly. Hash length: ${data.envHashLength}`,
+              data
+            );
+          } else {
+            addResult(
+              "Environment Test",
+              "fail",
+              `Environment variables not loaded properly. Hash exists: ${data.envHashExists}, Length: ${data.envHashLength}`,
+              data
+            );
+          }
+        } catch (error) {
+          addResult(
+            "Environment Test",
+            "fail",
+            `Environment test failed: ${error.message}`
+          );
+        }
+      }
+
+      async function testBcryptFunctionality() {
+        addResult("Bcrypt Test", "info", "Testing bcrypt hash verification...");
+
+        try {
+          const password = document.getElementById("testPassword").value;
+          const hash =
+            "$2b$12$aVQzyc9VnMs57xvtUjJrTOGWbKK0ZGI8OLzLEfd9RS6bHOCYppxy8.";
+
+          const response = await fetch("/api/test-bcrypt", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ password, hash }),
+          });
+
+          const data = await response.json();
+
+          if (data.originalResult === true) {
+            addResult(
+              "Bcrypt Test",
+              "pass",
+              "Bcrypt verification working correctly",
+              data
+            );
+          } else {
+            addResult(
+              "Bcrypt Test",
+              "fail",
+              "Bcrypt verification failed",
+              data
+            );
+          }
+        } catch (error) {
+          addResult(
+            "Bcrypt Test",
+            "fail",
+            `Bcrypt test failed: ${error.message}`
+          );
+        }
+      }
+
+      async function testCSRFTokens() {
+        addResult("CSRF Test", "info", "Testing CSRF token generation...");
+
+        try {
+          const response = await fetch("/api/csrf-token");
+          const data = await response.json();
+
+          if (data.csrfToken && data.csrfToken.length > 10) {
+            addResult(
+              "CSRF Test",
+              "pass",
+              `CSRF tokens generated successfully. Token length: ${data.csrfToken.length}`,
+              data
+            );
+          } else {
+            addResult(
+              "CSRF Test",
+              "fail",
+              "CSRF token generation failed",
+              data
+            );
+          }
+        } catch (error) {
+          addResult("CSRF Test", "fail", `CSRF test failed: ${error.message}`);
+        }
+      }
+
+      async function testLoginAPI() {
+        addResult(
+          "Login API Test",
+          "info",
+          "Testing login API with correct credentials..."
+        );
+
+        try {
+          // Get CSRF token first
+          const csrfResponse = await fetch("/api/csrf-token");
+          const csrfData = await csrfResponse.json();
+
+          // Attempt login
+          const password = document.getElementById("testPassword").value;
+          const loginResponse = await fetch("/api/admin/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-Token": csrfData.csrfToken,
+            },
+            body: JSON.stringify({ password }),
+          });
+
+          const loginData = await loginResponse.json();
+
+          if (loginResponse.ok && loginData.token) {
+            addResult(
+              "Login API Test",
+              "pass",
+              "Login API working correctly - authentication successful!",
+              loginData
+            );
+          } else {
+            addResult(
+              "Login API Test",
+              "fail",
+              `Login API failed: ${loginData.error || "Unknown error"}`,
+              loginData
+            );
+          }
+        } catch (error) {
+          addResult(
+            "Login API Test",
+            "fail",
+            `Login API test failed: ${error.message}`
+          );
+        }
+      }
+
+      async function testFullAuthFlow() {
+        addResult(
+          "Full Auth Flow Test",
+          "info",
+          "Testing complete authentication flow..."
+        );
+
+        try {
+          // Step 1: Get CSRF token
+          const csrfResponse = await fetch("/api/csrf-token");
+          const csrfData = await csrfResponse.json();
+
+          // Step 2: Login
+          const password = document.getElementById("testPassword").value;
+          const loginResponse = await fetch("/api/admin/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-Token": csrfData.csrfToken,
+            },
+            body: JSON.stringify({ password }),
+            credentials: "include", // Include cookies
+          });
+
+          const loginData = await loginResponse.json();
+
+          if (loginResponse.ok && loginData.token) {
+            // Step 3: Try to access protected route (if exists)
+            addResult(
+              "Full Auth Flow Test",
+              "pass",
+              "🎉 Complete authentication flow successful! You can now login to the admin panel.",
+              {
+                csrfToken: csrfData.csrfToken.substring(0, 20) + "...",
+                loginSuccess: true,
+                token: loginData.token.substring(0, 20) + "...",
+              }
+            );
+          } else {
+            addResult(
+              "Full Auth Flow Test",
+              "fail",
+              `Authentication flow failed: ${
+                loginData.error || "Unknown error"
+              }`,
+              loginData
+            );
+          }
+        } catch (error) {
+          addResult(
+            "Full Auth Flow Test",
+            "fail",
+            `Full auth flow test failed: ${error.message}`
+          );
+        }
+      }
+    </script>
+  </body>
+</html>

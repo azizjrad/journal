@@ -1227,9 +1227,7 @@ export async function getAnalyticsData(
       FROM article_engagement
       WHERE created_at >= ${startDate.toISOString()}
     `;
-    const totalEngagements = parseInt(totalEngagementsResult[0]?.total || "0");
-
-    // Popular articles
+    const totalEngagements = parseInt(totalEngagementsResult[0]?.total || "0"); // Popular articles
     const popularArticles = await sql`
       SELECT a.*, c.name_en as category_name_en, c.name_ar as category_name_ar,
              COUNT(av.id) as view_count
@@ -1237,8 +1235,10 @@ export async function getAnalyticsData(
       LEFT JOIN categories c ON a.category_id = c.id
       LEFT JOIN article_views av ON a.id = av.article_id AND av.viewed_at >= ${startDate.toISOString()}
       WHERE a.is_published = true
-      GROUP BY a.id, c.name_en, c.name_ar
-      ORDER BY view_count DESC
+      GROUP BY a.id, a.title_en, a.title_ar, a.content_en, a.content_ar, a.excerpt_en, a.excerpt_ar, 
+               a.category_id, a.is_published, a.is_featured, a.created_at, a.updated_at, 
+               c.name_en, c.name_ar
+      ORDER BY COUNT(av.id) DESC
       LIMIT 10
     `;
 
