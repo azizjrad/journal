@@ -8,16 +8,39 @@ export default function AdminPage() {
   const [articles, setArticles] = useState([]);
   const [categories, setCategories] = useState([]);
   const [analyticsData, setAnalyticsData] = useState(undefined);
+  const [scheduledArticles, setScheduledArticles] = useState([]);
 
   // Load dashboard data on component mount
   useEffect(() => {
     const loadDashboardData = async () => {
       try {
-        // These would be your actual API calls to fetch data
-        // For now, we'll set empty arrays
-        setArticles([]);
-        setCategories([]);
-        setAnalyticsData(undefined);
+        // Fetch articles
+        const articlesResponse = await fetch('/api/admin/articles');
+        if (articlesResponse.ok) {
+          const articlesData = await articlesResponse.json();
+          setArticles(articlesData);
+        }
+
+        // Fetch categories
+        const categoriesResponse = await fetch('/api/admin/categories');
+        if (categoriesResponse.ok) {
+          const categoriesData = await categoriesResponse.json();
+          setCategories(categoriesData);
+        }
+
+        // Fetch analytics data
+        const analyticsResponse = await fetch('/api/admin/analytics?days=30');
+        if (analyticsResponse.ok) {
+          const analyticsData = await analyticsResponse.json();
+          setAnalyticsData(analyticsData);
+        }
+
+        // Fetch scheduled articles
+        const scheduleResponse = await fetch('/api/admin/schedule');
+        if (scheduleResponse.ok) {
+          const scheduleData = await scheduleResponse.json();
+          setScheduledArticles(scheduleData);
+        }
       } catch (error) {
         console.error("Failed to load dashboard data:", error);
       }
@@ -50,7 +73,7 @@ export default function AdminPage() {
           articles={articles}
           categories={categories}
           initialAnalytics={analyticsData}
-          initialScheduledArticles={[]}
+          initialScheduledArticles={scheduledArticles}
         />
       </main>
     </div>

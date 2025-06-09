@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSearchSuggestions } from "@/lib/db";
-import { getClientIP, validateInput, sanitizeInput } from "@/lib/security";
+import { getClientIP, validateInput, sanitizeInput } from "@/lib/simple-security";
 
 export async function GET(request: NextRequest) {
   try {

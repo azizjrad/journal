@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSitemapEntries } from "@/lib/db";
-import { getClientIP } from "@/lib/security";
-import { addSecurityHeaders } from "@/lib/security-headers";
+import { getClientIP, addSecurityHeaders } from "@/lib/simple-security";
 
 export async function GET(request: NextRequest) {
   try {

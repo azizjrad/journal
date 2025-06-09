@@ -1,4 +1,4 @@
-import { validateInput, sanitizeInput } from "@/lib/security";
+import { validateInput, sanitizeInput } from "@/lib/simple-security";
 
 export interface ArticleValidationResult {
   isValid: boolean;
