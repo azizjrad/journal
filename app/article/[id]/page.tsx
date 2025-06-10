@@ -16,6 +16,8 @@ import { Metadata } from "next";
 import { ViewTracker } from "@/components/view-tracker";
 import { ShareButtons } from "@/components/share-buttons";
 import { notFound } from "next/navigation";
+import { ArticleContent } from "./article-content";
+import { ShareButtonsSection } from "./share-buttons-section";
 
 interface ArticlePageProps {
   params: Promise<{ id: string }>;
@@ -136,24 +138,19 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
           </div>
 
-          <div className="p-6 md:p-10">
-            {/* Category and Meta */}
-            <div className="flex flex-wrap items-center gap-4 mb-6 pb-4 border-b border-gray-200">
-              {article.category_name_en && (
-                <Badge
-                  variant="default"
-                  className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 text-sm font-semibold"
-                >
-                  {article.category_name_en}
-                </Badge>
-              )}
-              <div className="flex items-center gap-2 text-sm text-gray-600">
+          {/* Article Content with Language Support */}
+          <ArticleContent article={article} />
+
+          {/* Meta Information */}
+          <div className="px-6 md:px-10 pb-4">
+            <div className="flex items-center gap-4 text-sm text-gray-600 border-t border-gray-200 pt-4">
+              <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
                 <time dateTime={article.published_at}>
                   {formatDate(article.published_at)}
                 </time>
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
+              <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4" />
                 <span>
                   {article.reading_time_minutes ||
@@ -162,72 +159,11 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
                 </span>
               </div>
             </div>
+          </div>
 
-            {/* Tags */}
-            {article.tags && article.tags.length > 0 && (
-              <div className="mb-6 pb-4 border-b border-gray-200">
-                <h3 className="text-sm font-semibold text-gray-700 mb-3">
-                  Tags:
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {article.tags.map((tag) => (
-                    <Badge
-                      key={tag.slug}
-                      variant="outline"
-                      className="border-gray-300 text-gray-600 hover:bg-gray-50 text-xs px-3 py-1"
-                    >
-                      #{tag.name_en}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* English Content */}
-            <div className="mb-8">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight text-gray-900">
-                {article.title_en}
-              </h1>
-              <div className="prose prose-lg lg:prose-xl max-w-none text-gray-700 leading-relaxed">
-                {article.content_en
-                  .split("\n")
-                  .map((paragraph: string, index: number) => (
-                    <p key={index} className="mb-6 text-lg leading-8">
-                      {paragraph}
-                    </p>
-                  ))}
-              </div>
-            </div>
-
-            {/* Arabic Content */}
-            <div className="border-t-2 border-gray-200 pt-8" dir="rtl">
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-right leading-tight text-gray-900">
-                {article.title_ar}
-              </h1>
-              <div className="prose prose-lg lg:prose-xl max-w-none text-right text-gray-700 leading-relaxed">
-                {article.content_ar
-                  .split("\n")
-                  .map((paragraph: string, index: number) => (
-                    <p key={index} className="mb-6 text-lg leading-8">
-                      {paragraph}
-                    </p>
-                  ))}
-              </div>
-            </div>
-
-            {/* Share Buttons */}
-            <div className="border-t-2 border-gray-200 pt-8 mt-8 bg-gray-50 -mx-6 md:-mx-10 px-6 md:px-10 py-6 rounded-b-xl">
-              <h3 className="text-lg font-semibold mb-4 text-gray-900">
-                Share this article
-              </h3>
-              <ShareButtons
-                title={article.title_en}
-                url={`${
-                  process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
-                }/article/${article.id}`}
-                articleId={article.id}
-              />
-            </div>
+          {/* Share Buttons */}
+          <div className="border-t-2 border-gray-200 mt-4 bg-gray-50 px-6 md:px-10 py-6 rounded-b-xl">
+            <ShareButtonsSection article={article} />
           </div>
         </article>
       </main>

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { trackArticleEngagement } from "@/lib/db";
-import { getClientIP, validateInput, sanitizeInput } from "@/lib/simple-security";
+import { getClientIP, validateInput, sanitizeInput } from "@/lib/security";
 
 export async function POST(request: NextRequest) {
   try {

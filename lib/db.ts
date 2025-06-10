@@ -6,7 +6,7 @@ import { unstable_cache } from "next/cache";
  */
 function validateInput(input: string): boolean {
   if (!input) return true; // Allow empty strings
-  
+
   // Check for SQL injection patterns
   const sqlInjectionPattern =
     /(union|select|insert|update|delete|drop|create|alter|exec|execute|script|javascript|vbscript|onload|onerror|onclick)/i;
@@ -23,7 +23,7 @@ function validateInput(input: string): boolean {
  */
 function sanitizeInput(input: string): string {
   if (!input) return "";
-  
+
   return input
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
