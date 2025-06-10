@@ -98,22 +98,29 @@ export function EnhancedNewArticleForm({ categories }: NewArticleFormProps) {
       fileInputRef.current.value = "";
     }
   };
-
   const uploadImage = async (file: File): Promise<string> => {
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await fetch("/api/admin/upload", {
-      method: "POST",
-      body: formData,
-    });
+    try {
+      const response = await fetch("/api/admin/upload", {
+        method: "POST",
+        body: formData,
+      });
 
-    if (!response.ok) {
-      throw new Error("Failed to upload image");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.error || `Upload failed with status: ${response.status}`
+        );
+      }
+
+      const data = await response.json();
+      return data.url;
+    } catch (error) {
+      console.error("Image upload error:", error);
+      throw error;
     }
-
-    const data = await response.json();
-    return data.url;
   };
 
   const handleTagToggle = (tagId: number) => {

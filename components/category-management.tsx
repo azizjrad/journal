@@ -210,43 +210,40 @@ export function CategoryManagement({
       name_ar: category.name_ar,
     });
   };
-
   return (
     <div>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900">
-            Category Management
-          </h2>
-          <p className="text-gray-600 mt-1">
+          <h2 className="text-xl font-bold text-white">Category Management</h2>
+          <p className="text-gray-300 mt-1">
             Organize your content with custom categories
           </p>
-        </div>
+        </div>{" "}
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>
             <Button
               onClick={() => setIsCreateOpen(true)}
-              className="bg-purple-600 hover:bg-purple-700 text-white"
+              className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
             >
               <Plus className="h-4 w-4 mr-2" />
               New Category
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="sm:max-w-md bg-gray-900/95 backdrop-blur-xl border border-white/20">
             <DialogHeader>
-              <DialogTitle className="text-xl font-semibold text-gray-900">
+              <DialogTitle className="text-xl font-semibold text-white">
                 Create New Category
               </DialogTitle>
-              <DialogDescription className="text-gray-600">
+              <DialogDescription className="text-gray-300">
                 Add a new category for organizing articles.
               </DialogDescription>
-            </DialogHeader>
+            </DialogHeader>{" "}
             <div className="space-y-6">
               <div className="space-y-2">
                 <Label
                   htmlFor="name_en"
-                  className="text-sm font-medium text-gray-700"
+                  className="text-sm font-medium text-gray-200"
                 >
                   English Name
                 </Label>
@@ -260,13 +257,13 @@ export function CategoryManagement({
                     }))
                   }
                   placeholder="Category name in English"
-                  className="border-gray-300 focus:border-purple-500 focus:ring-purple-500"
+                  className="bg-white/10 border-white/20 text-white placeholder-gray-400 focus:border-purple-400 focus:ring-purple-400/50"
                 />
               </div>
               <div className="space-y-2">
                 <Label
                   htmlFor="name_ar"
-                  className="text-sm font-medium text-gray-700"
+                  className="text-sm font-medium text-gray-200"
                 >
                   Arabic Name
                 </Label>
@@ -280,10 +277,10 @@ export function CategoryManagement({
                     }))
                   }
                   placeholder="اسم التصنيف بالعربية"
-                  className="font-arabic text-right border-gray-300 focus:border-purple-500 focus:ring-purple-500"
+                  className="font-arabic text-right bg-white/10 border-white/20 text-white placeholder-gray-400 focus:border-purple-400 focus:ring-purple-400/50"
                 />
               </div>
-            </div>
+            </div>{" "}
             <DialogFooter className="gap-3">
               <Button
                 variant="outline"
@@ -291,7 +288,7 @@ export function CategoryManagement({
                   setIsCreateOpen(false);
                   resetForm();
                 }}
-                className="border-gray-300 hover:border-gray-400"
+                className="border-white/20 text-gray-300 hover:bg-white/10 hover:border-white/30"
               >
                 Cancel
               </Button>
@@ -302,29 +299,28 @@ export function CategoryManagement({
                   !formData.name_en.trim() ||
                   !formData.name_ar.trim()
                 }
-                className="bg-purple-600 hover:bg-purple-700"
+                className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold"
               >
                 {loading ? "Creating..." : "Create Category"}
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      </div>
-
+      </div>{" "}
       {/* Categories List */}
       <div className="space-y-4">
         {currentCategories.length === 0 ? (
-          <div className="text-center py-16 border-2 border-dashed border-gray-300 rounded-lg">
+          <div className="text-center py-16 border-2 border-dashed border-white/20 rounded-xl bg-white/5 backdrop-blur-sm">
             <Tag className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+            <h3 className="text-lg font-medium text-white mb-2">
               No categories yet
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-300 mb-6">
               Create your first category to organize content
             </p>
             <Button
               onClick={() => setIsCreateOpen(true)}
-              className="bg-purple-600 hover:bg-purple-700 text-white"
+              className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold"
             >
               <Plus className="h-4 w-4 mr-2" />
               Create First Category
@@ -332,33 +328,34 @@ export function CategoryManagement({
           </div>
         ) : (
           <>
+            {" "}
             <div className="space-y-4">
               {paginatedCategories.map((category) => (
                 <div
                   key={category.id}
-                  className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow"
+                  className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6 hover:bg-white/15 transition-all duration-300 shadow-lg"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-start gap-4">
-                        <div className="p-2 bg-purple-50 rounded-lg">
-                          <Tag className="h-5 w-5 text-purple-600" />
+                        <div className="p-3 bg-gradient-to-br from-purple-500/20 to-purple-600/20 rounded-xl backdrop-blur-sm">
+                          <Tag className="h-5 w-5 text-purple-300" />
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-lg font-medium text-gray-900 mb-2">
+                          <h3 className="text-lg font-semibold text-white mb-2">
                             {category.name_en}
                           </h3>
-                          <p className="text-gray-600 font-arabic mb-4 leading-relaxed">
+                          <p className="text-gray-300 font-arabic mb-4 leading-relaxed">
                             {category.name_ar}
                           </p>
 
                           <div className="flex items-center gap-3 mb-3">
-                            <Badge className="bg-purple-100 text-purple-800 border-purple-200">
+                            <Badge className="bg-purple-500/20 text-purple-300 border-purple-400/30 backdrop-blur-sm">
                               Category
                             </Badge>
                           </div>
 
-                          <p className="text-sm text-gray-500">
+                          <p className="text-sm text-gray-400">
                             Created{" "}
                             {new Date(category.created_at).toLocaleDateString(
                               "en-US",
@@ -371,8 +368,7 @@ export function CategoryManagement({
                           </p>
                         </div>
                       </div>
-                    </div>
-
+                    </div>{" "}
                     <div className="flex items-center gap-2 ml-6">
                       <Dialog
                         open={editingCategory?.id === category.id}
@@ -388,25 +384,25 @@ export function CategoryManagement({
                             variant="outline"
                             size="sm"
                             onClick={() => openEditDialog(category)}
-                            className="text-gray-700 border-gray-300 hover:bg-gray-50"
+                            className="text-gray-300 border-white/20 hover:bg-white/10 hover:border-white/30"
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-md">
+                        <DialogContent className="sm:max-w-md bg-gray-900/95 backdrop-blur-xl border border-white/20">
                           <DialogHeader>
-                            <DialogTitle className="text-xl font-semibold text-gray-900">
+                            <DialogTitle className="text-xl font-semibold text-white">
                               Edit Category
                             </DialogTitle>
-                            <DialogDescription className="text-gray-600">
+                            <DialogDescription className="text-gray-300">
                               Update the category information.
                             </DialogDescription>
-                          </DialogHeader>
+                          </DialogHeader>{" "}
                           <div className="space-y-6">
                             <div className="space-y-2">
                               <Label
                                 htmlFor="edit_name_en"
-                                className="text-sm font-medium text-gray-700"
+                                className="text-sm font-medium text-gray-200"
                               >
                                 English Name
                               </Label>
@@ -420,13 +416,13 @@ export function CategoryManagement({
                                   }))
                                 }
                                 placeholder="Category name in English"
-                                className="border-gray-300 focus:border-purple-500 focus:ring-purple-500"
+                                className="bg-white/10 border-white/20 text-white placeholder-gray-400 focus:border-purple-400 focus:ring-purple-400/50"
                               />
                             </div>
                             <div className="space-y-2">
                               <Label
                                 htmlFor="edit_name_ar"
-                                className="text-sm font-medium text-gray-700"
+                                className="text-sm font-medium text-gray-200"
                               >
                                 Arabic Name
                               </Label>
@@ -440,10 +436,10 @@ export function CategoryManagement({
                                   }))
                                 }
                                 placeholder="اسم التصنيف بالعربية"
-                                className="font-arabic text-right border-gray-300 focus:border-purple-500 focus:ring-purple-500"
+                                className="font-arabic text-right bg-white/10 border-white/20 text-white placeholder-gray-400 focus:border-purple-400 focus:ring-purple-400/50"
                               />
                             </div>
-                          </div>
+                          </div>{" "}
                           <DialogFooter className="gap-3">
                             <Button
                               variant="outline"
@@ -451,49 +447,48 @@ export function CategoryManagement({
                                 setEditingCategory(null);
                                 resetForm();
                               }}
-                              className="border-gray-300 hover:border-gray-400"
+                              className="border-white/20 text-gray-300 hover:bg-white/10 hover:border-white/30"
                             >
                               Cancel
                             </Button>
                             <Button
                               onClick={handleEdit}
                               disabled={loading}
-                              className="bg-purple-600 hover:bg-purple-700"
+                              className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold"
                             >
                               {loading ? "Updating..." : "Update Category"}
                             </Button>
                           </DialogFooter>
                         </DialogContent>
-                      </Dialog>
-
+                      </Dialog>{" "}
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button
                             variant="outline"
                             size="sm"
-                            className="text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
+                            className="text-red-400 border-red-400/30 hover:bg-red-500/10 hover:border-red-400/50"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </AlertDialogTrigger>
-                        <AlertDialogContent>
+                        <AlertDialogContent className="bg-gray-900/95 backdrop-blur-xl border border-white/20">
                           <AlertDialogHeader>
-                            <AlertDialogTitle className="text-red-600">
+                            <AlertDialogTitle className="text-red-400">
                               Delete Category
                             </AlertDialogTitle>
-                            <AlertDialogDescription>
+                            <AlertDialogDescription className="text-gray-300">
                               Are you sure you want to delete the category "
                               {category.name_en}"? This action cannot be undone
                               and may affect articles using this category.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel className="border-gray-300 hover:border-gray-400">
+                            <AlertDialogCancel className="border-white/20 text-gray-300 hover:bg-white/10 hover:border-white/30">
                               Cancel
                             </AlertDialogCancel>
                             <AlertDialogAction
                               onClick={() => handleDelete(category.id)}
-                              className="bg-red-600 hover:bg-red-700"
+                              className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold"
                             >
                               Delete
                             </AlertDialogAction>
@@ -505,7 +500,6 @@ export function CategoryManagement({
                 </div>
               ))}
             </div>
-
             {/* Pagination for categories */}
             <Pagination
               currentPage={categoriesCurrentPage}

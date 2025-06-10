@@ -17,7 +17,6 @@ import { ViewTracker } from "@/components/view-tracker";
 import { ShareButtons } from "@/components/share-buttons";
 import { notFound } from "next/navigation";
 import { ArticleContent } from "./article-content";
-import { ShareButtonsSection } from "./share-buttons-section";
 
 interface ArticlePageProps {
   params: Promise<{ id: string }>;
@@ -162,8 +161,14 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           </div>
 
           {/* Share Buttons */}
+          {/* Share Buttons */}
           <div className="border-t-2 border-gray-200 mt-4 bg-gray-50 px-6 md:px-10 py-6 rounded-b-xl">
-            <ShareButtonsSection article={article} />
+            <ShareButtons
+              url={`${process.env.NEXT_PUBLIC_SITE_URL || ""}/article/${
+                article.id
+              }`}
+              title={article.title_en}
+            />
           </div>
         </article>
       </main>

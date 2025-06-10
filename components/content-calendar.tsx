@@ -85,26 +85,32 @@ function ScheduleDialog({
   };
 
   return (
-    <DialogContent className="sm:max-w-md">
+    <DialogContent className="sm:max-w-md bg-gray-900/95 backdrop-blur-xl border border-white/20">
       <DialogHeader>
-        <DialogTitle>
+        <DialogTitle className="text-white">
           {scheduledItem ? "Edit Scheduled Article" : "Schedule Article"}
         </DialogTitle>
       </DialogHeader>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <Label htmlFor="article">Article</Label>
+          <Label htmlFor="article" className="text-gray-200">
+            Article
+          </Label>
           <Select
             value={selectedArticle}
             onValueChange={setSelectedArticle}
             disabled={!!article || !!scheduledItem}
           >
-            <SelectTrigger>
+            <SelectTrigger className="bg-white/10 border-white/20 text-white">
               <SelectValue placeholder="Select an article" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-gray-900/95 backdrop-blur-xl border border-white/20">
               {articles.map((art) => (
-                <SelectItem key={art.id} value={art.id.toString()}>
+                <SelectItem
+                  key={art.id}
+                  value={art.id.toString()}
+                  className="text-white hover:bg-white/10"
+                >
                   {art.title_en}
                 </SelectItem>
               ))}
@@ -113,7 +119,9 @@ function ScheduleDialog({
         </div>
 
         <div>
-          <Label htmlFor="date">Scheduled Date</Label>
+          <Label htmlFor="date" className="text-gray-200">
+            Scheduled Date
+          </Label>
           <Input
             id="date"
             type="date"
@@ -121,25 +129,37 @@ function ScheduleDialog({
             onChange={(e) => setScheduledDate(e.target.value)}
             required
             min={new Date().toISOString().split("T")[0]}
+            className="bg-white/10 border-white/20 text-white placeholder-gray-400 focus:border-orange-400 focus:ring-orange-400/50"
           />
         </div>
 
         <div>
-          <Label htmlFor="time">Scheduled Time</Label>
+          <Label htmlFor="time" className="text-gray-200">
+            Scheduled Time
+          </Label>
           <Input
             id="time"
             type="time"
             value={scheduledTime}
             onChange={(e) => setScheduledTime(e.target.value)}
             required
+            className="bg-white/10 border-white/20 text-white placeholder-gray-400 focus:border-orange-400 focus:ring-orange-400/50"
           />
         </div>
 
         <div className="flex gap-2 pt-4">
-          <Button type="submit" className="flex-1">
+          <Button
+            type="submit"
+            className="flex-1 bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-semibold"
+          >
             {scheduledItem ? "Update Schedule" : "Schedule Article"}
           </Button>
-          <Button type="button" variant="outline" onClick={onClose}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onClose}
+            className="border-white/20 text-gray-300 hover:bg-white/10 hover:border-white/30"
+          >
             Cancel
           </Button>
         </div>
@@ -198,7 +218,7 @@ function CalendarGrid({
       {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
         <div
           key={day}
-          className="p-2 text-center text-sm font-medium text-gray-500 border-b"
+          className="p-2 text-center text-sm font-medium text-gray-300 border-b border-white/20"
         >
           {day}
         </div>
@@ -207,29 +227,32 @@ function CalendarGrid({
         <div
           key={index}
           className={`
-            min-h-24 p-1 border border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors
-            ${!day.isCurrentMonth ? "bg-gray-50 text-gray-400" : ""}
+            min-h-24 p-1 border border-white/20 cursor-pointer hover:bg-white/5 transition-colors
+            ${
+              !day.isCurrentMonth ? "bg-white/5 text-gray-500" : "text-gray-300"
+            }
             ${
               day.date.toDateString() === today.toDateString()
-                ? "bg-blue-50 border-blue-200"
+                ? "bg-orange-500/20 border-orange-400/50"
                 : ""
             }
           `}
           onClick={() => onDayClick(day.date)}
         >
+          {" "}
           <div className="text-sm font-medium mb-1">{day.date.getDate()}</div>
           <div className="space-y-1">
             {day.scheduledArticles.slice(0, 2).map((item, idx) => (
               <div
                 key={idx}
-                className="text-xs p-1 bg-blue-100 text-blue-800 rounded truncate"
+                className="text-xs p-1 bg-orange-500/20 text-orange-300 border border-orange-400/30 rounded truncate backdrop-blur-sm"
                 title={item.title_en}
               >
                 {item.title_en}
               </div>
             ))}
             {day.scheduledArticles.length > 2 && (
-              <div className="text-xs text-gray-500">
+              <div className="text-xs text-gray-400">
                 +{day.scheduledArticles.length - 2} more
               </div>
             )}
@@ -256,9 +279,10 @@ function ScheduledArticlesList({
     const now = new Date();
     const diffHours = (scheduled.getTime() - now.getTime()) / (1000 * 60 * 60);
 
-    if (diffHours < 0) return "bg-red-100 text-red-800";
-    if (diffHours < 24) return "bg-yellow-100 text-yellow-800";
-    return "bg-green-100 text-green-800";
+    if (diffHours < 0) return "bg-red-500/20 text-red-300 border-red-400/30";
+    if (diffHours < 24)
+      return "bg-amber-500/20 text-amber-300 border-amber-400/30";
+    return "bg-green-500/20 text-green-300 border-green-400/30";
   };
 
   const getStatusText = (scheduledFor: string) => {
@@ -275,29 +299,39 @@ function ScheduledArticlesList({
   return (
     <div className="space-y-3">
       {scheduledArticles.map((item) => (
-        <Card key={item.id} className="p-4">
-          <div className="flex items-center justify-between">
+        <Card
+          key={item.id}
+          className="bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/15 transition-all duration-300 shadow-lg"
+        >
+          <div className="flex items-center justify-between p-4">
             <div className="flex-grow">
-              <h4 className="font-medium text-gray-900 mb-1">
-                {item.title_en}
-              </h4>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
+              <h4 className="font-medium text-white mb-1">{item.title_en}</h4>
+              <div className="flex items-center gap-2 text-sm text-gray-300">
                 <Clock className="h-4 w-4" />
                 <span>{new Date(item.scheduled_for).toLocaleString()}</span>
-                <Badge className={getStatusColor(item.scheduled_for)}>
+                <Badge
+                  className={`${getStatusColor(
+                    item.scheduled_for
+                  )} backdrop-blur-sm`}
+                >
                   {getStatusText(item.scheduled_for)}
                 </Badge>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button size="sm" variant="outline" onClick={() => onEdit(item)}>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => onEdit(item)}
+                className="text-gray-300 border-white/20 hover:bg-white/10 hover:border-white/30"
+              >
                 <Edit className="h-4 w-4" />
               </Button>
               <Button
                 size="sm"
                 variant="outline"
                 onClick={() => onPublish(item.id)}
-                className="text-green-600 hover:text-green-700"
+                className="text-green-400 border-green-400/30 hover:bg-green-500/10 hover:border-green-400/50"
               >
                 <CheckCircle className="h-4 w-4" />
               </Button>
@@ -305,7 +339,7 @@ function ScheduledArticlesList({
                 size="sm"
                 variant="outline"
                 onClick={() => onCancel(item.id)}
-                className="text-red-600 hover:text-red-700"
+                className="text-red-400 border-red-400/30 hover:bg-red-500/10 hover:border-red-400/50"
               >
                 <XCircle className="h-4 w-4" />
               </Button>
@@ -395,22 +429,26 @@ export function ContentCalendar({
       console.error("Failed to cancel scheduled article:", error);
     }
   };
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Content Calendar</h2>
-          <p className="text-gray-600">
+          <h2 className="text-xl font-bold text-white">Content Calendar</h2>
+          <p className="text-gray-300">
             Schedule and manage article publications
           </p>
-        </div>
+        </div>{" "}
         <div className="flex items-center gap-3">
-          <div className="flex bg-gray-100 rounded-lg p-1">
+          <div className="flex bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-1">
             <Button
               size="sm"
               variant={view === "calendar" ? "default" : "ghost"}
               onClick={() => setView("calendar")}
+              className={
+                view === "calendar"
+                  ? "bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-semibold"
+                  : "text-gray-300 hover:text-white hover:bg-white/10"
+              }
             >
               <Calendar className="h-4 w-4 mr-2" />
               Calendar
@@ -419,17 +457,22 @@ export function ContentCalendar({
               size="sm"
               variant={view === "list" ? "default" : "ghost"}
               onClick={() => setView("list")}
+              className={
+                view === "list"
+                  ? "bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-semibold"
+                  : "text-gray-300 hover:text-white hover:bg-white/10"
+              }
             >
               <AlertCircle className="h-4 w-4 mr-2" />
               List
             </Button>
-          </div>
+          </div>{" "}
           <Dialog
             open={showScheduleDialog}
             onOpenChange={setShowScheduleDialog}
           >
             <DialogTrigger asChild>
-              <Button>
+              <Button className="bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200">
                 <Plus className="h-4 w-4 mr-2" />
                 Schedule Article
               </Button>
@@ -445,13 +488,12 @@ export function ContentCalendar({
             />
           </Dialog>
         </div>
-      </div>
-
+      </div>{" "}
       {view === "calendar" ? (
-        <Card>
+        <Card className="bg-white/10 backdrop-blur-sm border border-white/20 shadow-lg">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>
+              <CardTitle className="text-white">
                 {currentDate.toLocaleDateString("en-US", {
                   month: "long",
                   year: "numeric",
@@ -462,6 +504,7 @@ export function ContentCalendar({
                   size="sm"
                   variant="outline"
                   onClick={() => navigateMonth("prev")}
+                  className="border-white/20 text-gray-300 hover:bg-white/10 hover:border-white/30"
                 >
                   ←
                 </Button>
@@ -469,6 +512,7 @@ export function ContentCalendar({
                   size="sm"
                   variant="outline"
                   onClick={() => setCurrentDate(new Date())}
+                  className="border-white/20 text-gray-300 hover:bg-white/10 hover:border-white/30"
                 >
                   Today
                 </Button>
@@ -476,6 +520,7 @@ export function ContentCalendar({
                   size="sm"
                   variant="outline"
                   onClick={() => navigateMonth("next")}
+                  className="border-white/20 text-gray-300 hover:bg-white/10 hover:border-white/30"
                 >
                   →
                 </Button>
@@ -491,9 +536,9 @@ export function ContentCalendar({
           </CardContent>
         </Card>
       ) : (
-        <Card>
+        <Card className="bg-white/10 backdrop-blur-sm border border-white/20 shadow-lg">
           <CardHeader>
-            <CardTitle>Scheduled Articles</CardTitle>
+            <CardTitle className="text-white">Scheduled Articles</CardTitle>
           </CardHeader>
           <CardContent>
             <ScheduledArticlesList

@@ -1,4 +1,5 @@
 import { AdminDashboard } from "@/components/admin-dashboard";
+import { AuthWrapper } from "@/components/auth-wrapper";
 import {
   getAllArticlesAdmin,
   getCategories,
@@ -7,7 +8,6 @@ import {
 } from "@/lib/db";
 
 export default async function AdminPage() {
-  // Note: No authentication checks - admin dashboard is now publicly accessible
   let analyticsData;
   try {
     // Fetch real analytics data only - no fallback to mock data
@@ -22,13 +22,13 @@ export default async function AdminPage() {
     getAllArticlesAdmin(),
     getCategoriesCached(),
   ]);
-
   return (
-    <AdminDashboard
-      articles={articles}
-      categories={categories}
-      initialAnalytics={analyticsData}
-      initialScheduledArticles={[]}
-    />
+    <AuthWrapper>
+      <AdminDashboard
+        articles={articles}
+        categories={categories}
+        initialAnalytics={analyticsData}
+      />
+    </AuthWrapper>
   );
 }

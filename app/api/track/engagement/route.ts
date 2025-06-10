@@ -1,6 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
 import { trackArticleEngagement } from "@/lib/db";
-import { getClientIP, validateInput, sanitizeInput } from "@/lib/security";
+
+// Simple security functions
+function getClientIP(request: NextRequest): string {
+  const forwarded = request.headers.get("x-forwarded-for");
+  const realIP = request.headers.get("x-real-ip");
+  return forwarded?.split(",")[0] || realIP || "unknown";
+}
+
+function validateInput(input: string): boolean {
+  // Basic XSS and injection protection
+  const dangerous = /<script|javascript:|data:|vbscript:|onload|onerror/i;
+  return !dangerous.test(input);
+}
+
+function sanitizeInput(input: string): string {
+  return input.replace(/[<>\"'&]/g, (match) => {
+    const escapes: { [key: string]: string } = {
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#x27;",
+      "&": "&amp;",
+    };
+    return escapes[match] || match;
+  });
+}
 
 export async function POST(request: NextRequest) {
   try {

@@ -20,7 +20,9 @@ export function ArticleContent({ article }: ArticleContentProps) {
   };
 
   const getCategoryName = () => {
-    return language === "ar" ? article.category_name_ar : article.category_name_en;
+    return language === "ar"
+      ? article.category_name_ar
+      : article.category_name_en;
   };
 
   const getTagName = (tag: any) => {
@@ -62,7 +64,10 @@ export function ArticleContent({ article }: ArticleContentProps) {
       )}
 
       {/* Article Content - Single Language */}
-      <div className={language === "ar" ? "text-right" : ""} dir={language === "ar" ? "rtl" : "ltr"}>
+      <div
+        className={language === "ar" ? "text-right" : ""}
+        dir={language === "ar" ? "rtl" : "ltr"}
+      >
         <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight text-gray-900">
           {getTitle()}
         </h1>

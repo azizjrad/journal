@@ -49,15 +49,39 @@ export function ShareButtons({ title, url, articleId }: ShareButtonsProps) {
     )}&url=${encodeURIComponent(url)}`;
     window.open(twitterUrl, "_blank", "noopener,noreferrer");
   };
-
   const copyLink = async () => {
     try {
+      // Check if clipboard API is available and allowed
+      if (!navigator.clipboard || !navigator.clipboard.writeText) {
+        throw new Error("Clipboard API not available");
+      }
+
       await navigator.clipboard.writeText(url);
       trackEngagement("copy_link");
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error("Failed to copy link:", err);
+
+      // Fallback: Try to select and copy using document.execCommand
+      try {
+        const textArea = document.createElement("textarea");
+        textArea.value = url;
+        textArea.style.position = "fixed";
+        textArea.style.opacity = "0";
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+
+        trackEngagement("copy_link");
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (fallbackErr) {
+        console.error("Fallback copy also failed:", fallbackErr);
+        // Show error message to user
+        alert("Copy failed. Please copy the URL manually: " + url);
+      }
     }
   };
 
