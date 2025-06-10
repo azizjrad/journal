@@ -1,6 +1,36 @@
 import { neon } from "@neondatabase/serverless";
 import { unstable_cache } from "next/cache";
-import { validateInput, sanitizeInput } from "./security";
+
+/**
+ * Validate input against common injection patterns
+ */
+function validateInput(input: string): boolean {
+  if (!input) return true; // Allow empty strings
+  
+  // Check for SQL injection patterns
+  const sqlInjectionPattern =
+    /(union|select|insert|update|delete|drop|create|alter|exec|execute|script|javascript|vbscript|onload|onerror|onclick)/i;
+
+  // Check for XSS patterns
+  const xssPattern =
+    /(<script|<img|<iframe|<object|<embed|<link|<meta|javascript:|vbscript:|data:)/i;
+
+  return !sqlInjectionPattern.test(input) && !xssPattern.test(input);
+}
+
+/**
+ * Sanitize input to prevent XSS
+ */
+function sanitizeInput(input: string): string {
+  if (!input) return "";
+  
+  return input
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;")
+    .replace(/\//g, "&#x2F;");
+}
 
 const sql = neon(process.env.DATABASE_URL!);
 
