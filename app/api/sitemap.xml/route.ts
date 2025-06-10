@@ -1,7 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSitemapEntries } from "@/lib/db";
-import { getClientIP } from "@/lib/security";
-import { addSecurityHeaders } from "@/lib/security-headers";
+
+// Self-contained security functions
+function getClientIP(request: NextRequest): string {
+  const forwarded = request.headers.get("x-forwarded-for");
+  const real = request.headers.get("x-real-ip");
+  const remote = request.headers.get("x-forwarded-for")?.split(",")[0];
+  return forwarded || real || remote || "unknown";
+}
+
+function addSecurityHeaders(response: NextResponse): NextResponse {
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("X-XSS-Protection", "1; mode=block");
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  return response;
+}
 
 export async function GET(request: NextRequest) {
   try {

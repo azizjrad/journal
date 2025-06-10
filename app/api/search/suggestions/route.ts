@@ -1,6 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSearchSuggestions } from "@/lib/db";
-import { getClientIP, validateInput, sanitizeInput } from "@/lib/security";
+
+// Self-contained security functions
+function getClientIP(request: NextRequest): string {
+  const forwarded = request.headers.get("x-forwarded-for");
+  const real = request.headers.get("x-real-ip");
+  const remote = request.headers.get("x-forwarded-for")?.split(",")[0];
+  return forwarded || real || remote || "unknown";
+}
+
+function validateInput(input: string): boolean {
+  if (!input || typeof input !== "string") return false;
+  const suspiciousPatterns = [
+    /<script/i,
+    /javascript:/i,
+    /on\w+\s*=/i,
+    /eval\s*\(/i,
+    /expression\s*\(/i,
+  ];
+  return !suspiciousPatterns.some((pattern) => pattern.test(input));
+}
+
+function sanitizeInput(input: string): string {
+  return input
+    .replace(/[<>'"&]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .substring(0, 100);
+}
 
 export async function GET(request: NextRequest) {
   try {
